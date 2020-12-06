@@ -1,26 +1,93 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="container">
+    <form @submit.prevent="addNewTodo">
+      <div class="form-group">
+      <label for="exampleInputEmail1">Todo</label>
+      <input
+        type="input"
+        class="form-control"
+        v-model="newTodo"
+      />
+    </div>
+        <button class="btn btn-primary">Add Todo</button>
+    </form>
+        <div class="d-block mt-2">
+            <button class="btn btn-primary" @click="markAllDone()">Mark All Done</button>
+            <button class="btn btn-primary ml-2" @click="removeAllTodos()">Remove All Todos</button>
+        </div>
+    <ul>
+      <li v-for="(todo) in todos" :key="todo.id">
+        <h2 :class="{done : todo.done}" @click="toggleDone(todo)" class="todo">{{ todo.content }}</h2>
+        <button class="btn btn-info" @click="removeTodo(todo)">Remove</button>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import { ref } from 'vue';
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  setup() {
+    const newTodo = ref('');
+    const todos = ref([]);
+
+    function addNewTodo(){
+      todos.value.push({
+        id: Date.now(),
+        done: false,
+        content: newTodo.value
+      })
+      newTodo.value = ''
+    }
+
+    function toggleDone(todo){
+      todo.done = !todo.done;
+    }
+
+    function removeTodo(todo){
+      todos.value.splice(todo, 1);
+    }
+
+    function markAllDone(){
+      todos.value.forEach(element => {
+        element.done = true;
+      });
+    }
+
+    function removeAllTodos(){
+      todos.value = [];
+    }
+
+    return {
+      toggleDone,
+      todos,
+      newTodo,
+      addNewTodo,
+      removeTodo,
+      markAllDone,
+      removeAllTodos
+    };
   }
-}
+};
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+@import "~bootstrap/dist/css/bootstrap.css";
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: "Arial", Courier, monospace;
+  line-height: 1.4;
+}
+
+.done { 
+  text-decoration: line-through;
+}
+
+.todo {
+  cursor: pointer;
 }
 </style>
