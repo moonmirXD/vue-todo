@@ -2,62 +2,80 @@
   <div class="container">
     <form @submit.prevent="addNewTodo">
       <div class="form-group">
-      <label for="exampleInputEmail1">Todo</label>
-      <input
-        type="input"
-        class="form-control"
-        v-model="newTodo"
-      />
-    </div>
-        <button class="btn btn-primary">Add Todo</button>
+        <label for="exampleInputEmail1">Todo</label>
+        <input type="input" class="form-control" v-model="newTodo" />
+      </div>
+      <button class="btn btn-primary">Add Todo</button>
     </form>
-        <div class="d-block mt-2">
-            <button class="btn btn-primary" @click="markAllDone()">Mark All Done</button>
-            <button class="btn btn-primary ml-2" @click="removeAllTodos()">Remove All Todos</button>
-        </div>
+    <div class="d-block mt-2">
+      <button class="btn btn-primary" @click="markAllDone()">
+        Mark All Done
+      </button>
+      <button class="btn btn-primary ml-2" @click="removeAllTodos()">
+        Remove All Todos
+      </button>
+    </div>
     <ul>
-      <li v-for="(todo) in todos" :key="todo.id">
-        <h2 :class="{done : todo.done}" @click="toggleDone(todo)" class="todo">{{ todo.content }}</h2>
+      <li v-for="todo in todos" :key="todo.id">
+        <h2 :class="{ done: todo.done }" @click="toggleDone(todo)" class="todo">
+          {{ todo.content }}
+        </h2>
         <button class="btn btn-info" @click="removeTodo(todo)">Remove</button>
       </li>
     </ul>
+
+    <div>
+      <ul>
+        <li v-for="todo in listTodos" :key="todo.id">{{ todo.title }}</li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref } from "vue";
 export default {
   setup() {
-    const newTodo = ref('');
+    const API_URL = "http://localhost:1337/";
+    const newTodo = ref("");
     const todos = ref([]);
+    const listTodos = ref([]);
 
-    function addNewTodo(){
+    function addNewTodo() {
       todos.value.push({
         id: Date.now(),
         done: false,
-        content: newTodo.value
-      })
-      newTodo.value = ''
+        content: newTodo.value,
+      });
+      newTodo.value = "";
     }
 
-    function toggleDone(todo){
+    function toggleDone(todo) {
       todo.done = !todo.done;
     }
 
-    function removeTodo(todo){
+    function removeTodo(todo) {
       todos.value.splice(todo, 1);
     }
 
-    function markAllDone(){
-      todos.value.forEach(element => {
+    function markAllDone() {
+      todos.value.forEach((element) => {
         element.done = true;
       });
     }
 
-    function removeAllTodos(){
+    function removeAllTodos() {
       todos.value = [];
     }
 
+    async function getTodos() {
+      const response = await fetch(`${API_URL}api/todos`);
+      const json = await response.json();
+      console.log(json);
+      listTodos.value = json;
+    }
+
+    getTodos();
     return {
       toggleDone,
       todos,
@@ -65,9 +83,11 @@ export default {
       addNewTodo,
       removeTodo,
       markAllDone,
-      removeAllTodos
+      removeAllTodos,
+      getTodos,
+      listTodos,
     };
-  }
+  },
 };
 </script>
 
@@ -83,7 +103,7 @@ body {
   line-height: 1.4;
 }
 
-.done { 
+.done {
   text-decoration: line-through;
 }
 
