@@ -49,6 +49,15 @@ export default {
         content: newTodo.value,
       });
       newTodo.value = "";
+
+      return axios
+        .post(`${API_URL}api/todos`, {
+          title: newTodo.value,
+          author: newTodo.value,
+        })
+        .then((response) => {
+          console.log(response);
+        });
     }
 
     function toggleDone(todo) {
