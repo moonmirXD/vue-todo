@@ -34,6 +34,7 @@
 
 <script>
 import { ref } from "vue";
+import axios from "axios";
 export default {
   setup() {
     const API_URL = "http://localhost:1337/";
@@ -69,11 +70,13 @@ export default {
     }
 
     async function getTodos() {
-      const response = await fetch(`${API_URL}api/todos`);
-      const json = await response.json();
-      console.log(json);
-      listTodos.value = json;
+      return axios.get(`${API_URL}api/todos`).then((response) => {
+        console.log(response);
+        listTodos.value = response.data;
+      });
     }
+
+    async function createTodos() {}
 
     getTodos();
     return {
@@ -86,6 +89,7 @@ export default {
       removeAllTodos,
       getTodos,
       listTodos,
+      createTodos,
     };
   },
 };
